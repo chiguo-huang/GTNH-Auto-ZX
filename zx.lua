@@ -89,15 +89,23 @@ local function get_direction(prompt, default)
     end
 end
  
-local function wait_for_signal(side, expected_sig, timeout) --只支持红石事件
+local function wait_for_signal(side, expected_sig, timeout, reason) --只支持红石事件
+    if redstone.getInput(side) == expected_sig then --先查当前电平，防止等待前信号已到位（或事件被os.sleep吞掉）
+        print(string.format("[%s] 信号当前已为%d，直接通过", reason, expected_sig))
+        return true
+    end
     local start = computer.uptime()
     while computer.uptime() - start < timeout do
         local remaining = timeout - (computer.uptime()- start)
         local wait = math.min(5, math.max(0.1, remaining))  -- 单次循环最多等5秒，但不超过剩余时间
         local _, _, event_side, _, new_sig = event.pull(wait, "redstone_changed")
-        if event_side == side and new_sig == expected_sig then return true end
+        if event_side == side and new_sig == expected_sig then
+            print(string.format("[%s] 收到信号，耗时%.0f秒", reason, computer.uptime() - start))
+            return true
+        end
+        print(string.format("[%s] 等待信号中，已等%.0f/%d秒", reason, computer.uptime() - start, timeout))
     end
-    print("等待超时，尝试重启机器。")
+    print(string.format("[%s] 等待超时（%d秒）", reason, timeout))
     return false
 end
  
@@ -114,16 +122,27 @@ local function ore_drill()
     while true do
         set_oredrills(true)
         os.sleep(1)
-        if wait_for_signal(side_done_drills, 15, 300) then break end
+        if wait_for_signal(side_done_drills, 15, 300, "采矿场完成") then break end
+        print("超时，真正重启采矿场：先停机再启动")
+        set_oredrills(false)
+        os.sleep(2)
     end
     print("采矿场开采完成")
 end
- 
+
 local function ore_miner()
     print("清理非矿石中")
     redstone.setOutput(side_miners, 15)
     os.sleep(2)
-    while true do if wait_for_signal(side_done_miners, 15, 300) then redstone.setOutput(side_miners, 0) break end end
+    while true do
+        if wait_for_signal(side_done_miners, 15, 300, "清理机完成") then break end
+        print("超时，真正重启清理机：断电后重新上电")
+        redstone.setOutput(side_miners, 0)
+        os.sleep(2)
+        redstone.setOutput(side_miners, 15)
+        os.sleep(2)
+    end
+    redstone.setOutput(side_miners, 0)
     print("清理完毕")
 end
  
@@ -180,17 +199,13 @@ local function initialize()
     os.sleep(3)
     print("清理场地中")
     ore_drill()
-    if mode ~= 3 then
-        redstone.setOutput(side_miners, 15)
-        os.sleep(5)
-        while true do
-            if redstone.getInput(side_done_miners) == 15 or wait_for_signal(side_done_miners, 15, 300) then redstone.setOutput(side_miners, 0) break end
-        end 
-    end
+    if mode ~= 3 then ore_miner() end
 end
  
 local function main()
     initialize()
+    print("初始化完成，进入主循环")
+    os.sleep(2)
     ::select::
     os.execute("cls")
     local item = transposer.getStackInSlot(side_item_in, 2)
@@ -208,21 +223,25 @@ local function main()
         goto select
     end
     local orb
+    local orb_wait = 0
     while true do
         orb = transposer.getStackInSlot(side_orb, 1)
         if not orb then
             os.execute("cls")
-            print("未检测到宝珠，待机等待")
+            print(string.format("未检测到宝珠，待机等待（已等%d秒）", orb_wait))
             os.sleep(5)
+            orb_wait = orb_wait + 5
         else break end
     end
     local lp = 0
+    local lp_wait = 0
     while true do
         orb = transposer.getStackInSlot(side_orb, 1)
         lp = orb.networkEssence
         if item_info.lp <= lp + 100 then break end
-        print(string.format("LP不足（需要%d，当前%d），待机等待", item_info.lp, lp))
+        print(string.format("LP不足（需要%d，当前%d，还差%d，已等%d秒），待机等待", item_info.lp, lp, item_info.lp - lp, lp_wait))
         os.sleep(10)
+        lp_wait = lp_wait + 10
     end
     print("当前网络lp量：", lp)
     print("祭品lp消耗量：", item_info.lp)

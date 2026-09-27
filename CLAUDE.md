@@ -62,6 +62,7 @@ GTNH（GregTech: New Horizons）整合包中血魔法"陨星仪式"（流星农�
 
 ## 关键机制与约定
 
-- **完成信号**：机器完成后在约定方向输出信号强度 15。`wait_for_signal` 以 ≤5 秒分段 `event.pull` 监听 `redstone_changed`，总超时 300 秒。
-- **超时重试**：`ore_drill` 超时后靠外层 `while true` 重新 `setWorkAllowed(true)` 实现"重启"；`wait_for_signal` 本身只打印提示不执行重启。
+- **完成信号**：机器完成后在约定方向输出信号强度 15。`wait_for_signal(side, 15, 300, 原因)` **先检查当前电平**（防止等待开始前信号已到位、或红石事件被 `os.sleep` 吞掉导致死等），再以 ≤5 秒分段监听 `redstone_changed`，每段打印等待原因与进度，总超时 300 秒。
+- **超时重试**：`ore_drill` 超时后 `setWorkAllowed(false)`→`(true)` 真正重启机器；`ore_miner` 超时后断电再上电重启。初始化清理与主循环共用 `ore_miner()`。
 - **容差设计**：LP 允许差 100 以内即开跑（LP 在转运期间仍在增长）。
+- **等待可视化**：所有等待点（无祭品/宝珠/LP/红石信号）都周期性打印原因与已等待时间，避免"静默卡死看起来像死机"。
