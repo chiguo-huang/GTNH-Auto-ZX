@@ -89,22 +89,29 @@ local function get_direction(prompt, default)
     end
 end
  
-local function wait_for_signal(side, expected_sig, timeout, reason) --只支持红石事件
+local function wait_for_signal(side, expected_sig, timeout, reason, attempt, global_start) --只支持红石事件；attempt为第几次循环(从0起)，global_start为全局等待起始uptime
     if redstone.getInput(side) == expected_sig then --先查当前电平，防止等待前信号已到位（或事件被os.sleep吞掉）
         print(string.format("[%s] 信号当前已为%d，直接通过", reason, expected_sig))
         return true
     end
     local start = computer.uptime()
+    local base = global_start or start
+    local line_len = 0 --组内进度行单行刷新：已打印内容的字节长度
     while computer.uptime() - start < timeout do
         local remaining = timeout - (computer.uptime()- start)
         local wait = math.min(5, math.max(0.1, remaining))  -- 单次循环最多等5秒，但不超过剩余时间
         local _, _, event_side, _, new_sig = event.pull(wait, "redstone_changed")
         if event_side == side and new_sig == expected_sig then
-            print(string.format("[%s] 收到信号，耗时%.0f秒", reason, computer.uptime() - start))
+            if line_len > 0 then io.write("\n") end --结束进度行，让结果另起一行
+            print(string.format("[%s] 收到信号，本组耗时%.0f秒，共计等待%.0f秒", reason, computer.uptime() - start, computer.uptime() - base))
             return true
         end
-        print(string.format("[%s] 等待信号中，已等%.0f/%d秒", reason, computer.uptime() - start, timeout))
+        --一组timeout秒内共享同一行：\r回行首原地覆盖刷新，按字节差补空格擦残留（可变部分均为数字，字节差=显示宽度差）
+        local msg = string.format("[%s] 已等%.0f秒/%d秒，共计等待%.0f秒（第%d次循环，从0开始）（全局等待时间）", reason, computer.uptime() - start, timeout, computer.uptime() - base, attempt or 0)
+        io.write((line_len == 0 and "\n" or "\r") .. msg .. string.rep(" ", math.max(0, line_len - #msg)))
+        line_len = #msg
     end
+    if line_len > 0 then io.write("\n") end --组超时，结束进度行再打印结果
     print(string.format("[%s] 等待超时（%d秒）", reason, timeout))
     return false
 end
@@ -119,13 +126,16 @@ end
  
 local function ore_drill()
     print("采矿场开采中")
+    local attempt = 0
+    local global_start = computer.uptime()
     while true do
         set_oredrills(true)
         os.sleep(1)
-        if wait_for_signal(side_done_drills, 15, 300, "采矿场完成") then break end
+        if wait_for_signal(side_done_drills, 15, 300, "等待采矿场完成信号", attempt, global_start) then break end
         print("超时，真正重启采矿场：先停机再启动")
         set_oredrills(false)
         os.sleep(2)
+        attempt = attempt + 1
     end
     print("采矿场开采完成")
 end
@@ -134,13 +144,16 @@ local function ore_miner()
     print("清理非矿石中")
     redstone.setOutput(side_miners, 15)
     os.sleep(2)
+    local attempt = 0
+    local global_start = computer.uptime()
     while true do
-        if wait_for_signal(side_done_miners, 15, 300, "清理机完成") then break end
+        if wait_for_signal(side_done_miners, 15, 300, "等待清理机完成信号", attempt, global_start) then break end
         print("超时，真正重启清理机：断电后重新上电")
         redstone.setOutput(side_miners, 0)
         os.sleep(2)
         redstone.setOutput(side_miners, 15)
         os.sleep(2)
+        attempt = attempt + 1
     end
     redstone.setOutput(side_miners, 0)
     print("清理完毕")
