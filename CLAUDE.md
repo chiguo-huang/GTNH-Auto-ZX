@@ -8,6 +8,14 @@ GTNH（GregTech: New Horizons）整合包中血魔法"陨星仪式"（流星农�
 
 无构建、测试、依赖管理工具链。脚本需拷入游戏内 OC 电脑运行；在本机只能做语法检查（如已安装 Lua：`luac -p zx.lua`）。注意 OC 使用 Lua 5.2+ 语法（`goto` 可用），`os.execute("cls")` 是 OC 清屏而非 Windows 命令。
 
+## 工作流（必须遵守）
+
+固定流程：**修改代码 → commit 并推送到 Gitee → 向用户反馈结果**。每次修改完成后必须立即提交并推送，不要把改动留在本地。
+
+- 远程：`origin` = `git@gitee.com:mika-miko/starry-fall-automation.git`（SSH，master 分支）
+- 本机全局 git 代理（localhost:7897）可能未运行：SSH 推送不受影响，不要改回 HTTPS 地址
+- 游戏内下载地址（README 中提供）：`https://gitee.com/mika-miko/starry-fall-automation/raw/master/zx.lua`
+
 ## 游戏内硬件布局（脚本自识别约定）
 
 启动时扫描组件，按约定识别，缺任一即 `os.exit(0)` 退出：
