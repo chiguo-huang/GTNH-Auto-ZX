@@ -134,16 +134,16 @@ local function initialize()
     local input = tonumber(io.read())
     if (input == 1 or input == 2 or input == 3) then mode = input
     else mode = 3 end
-    side_ritual = get_direction("控制仪式启动的方向", "s")
+    side_ritual = get_direction("控制仪式启动的方向", "e")
     if mode == 1 then
-        side_miners = get_direction("控制奥术钻探机启动的方向", "d")
-        side_done_miners = get_direction("接受奥术钻探机开采完成信号的方向", "u")
+        side_miners = get_direction("控制奥术钻探机启动的方向", "w")
+        side_done_miners = get_direction("接受奥术钻探机开采完成信号的方向", "n")
     end
     if mode == 2 then
-        side_miners = get_direction("控制填充机启动的方向", "d")
-        side_done_miners = get_direction("接受填充机清理完成信号的方向", "u")
+        side_miners = get_direction("控制填充机启动的方向", "w")
+        side_done_miners = get_direction("接受填充机清理完成信号的方向", "n")
     end
-    side_done_drills = get_direction("接受采矿场采矿完成信号的方向", "w")
+    side_done_drills = get_direction("接受采矿场采矿完成信号的方向", "s")
     for addr in component.list() do
         local type = component.proxy(addr).type
         if type == "redstone" then redstone = component.proxy(addr)
