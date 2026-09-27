@@ -235,14 +235,19 @@ local function main()
     end
     local lp = 0
     local lp_wait = 0
+    local lp_len = 0 --LP信息单行刷新：上一条已打印内容的字节长度
     while true do
         orb = transposer.getStackInSlot(side_orb, 1)
         lp = orb.networkEssence
         if item_info.lp <= lp + 100 then break end
-        print(string.format("LP不足（需要%d，当前%d，还差%d，已等%d秒），待机等待", item_info.lp, lp, item_info.lp - lp, lp_wait))
+        local msg = string.format("LP不足（需要%d，当前%d，还差%d，已等%d秒）", item_info.lp, lp, item_info.lp - lp, lp_wait)
+        --首次换新行，之后\r回到行首原地刷新；按字节差补空格擦除残留（可变部分均为数字，字节差=显示宽度差）
+        io.write((lp_len == 0 and "\n" or "\r") .. msg .. string.rep(" ", math.max(0, lp_len - #msg)))
+        lp_len = #msg
         os.sleep(10)
         lp_wait = lp_wait + 10
     end
+    if lp_len > 0 then io.write("\n") end --LP等待结束，补换行让后续输出另起一行
     print("当前网络lp量：", lp)
     print("祭品lp消耗量：", item_info.lp)
     transposer.transferItem(side_item_in, side_item_out, 1, 2, 1)
