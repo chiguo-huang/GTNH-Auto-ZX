@@ -208,7 +208,13 @@ local function initialize()
         os.exit(0)
     end
     print(string.format("共%d台采矿场", #oredrills))
-    if mode ~= 3 then redstone.setOutput(side_miners, 0) end
+    --回显生效的方向配置，便于排查"信号发不出去=方向与布线不符"
+    local names = { [sides.north] = "北", [sides.south] = "南", [sides.east] = "东", [sides.west] = "西", [sides.up] = "上", [sides.down] = "下" }
+    print(string.format("配置回显：仪式触发→%s | 采矿场完成←%s", names[side_ritual], names[side_done_drills]))
+    if mode ~= 3 then
+        print(string.format("配置回显：清理机启停→%s | 清理机完成←%s", names[side_miners], names[side_done_miners]))
+        redstone.setOutput(side_miners, 0)
+    end
     os.sleep(3)
     print("清理场地中")
     ore_drill()
