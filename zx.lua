@@ -159,27 +159,6 @@ local function ore_miner()
     print("清理完毕")
 end
  
---红石自检：运行 `zx.lua test`，依次在每个面输出15信号各5秒，用于确认信号实际能从哪个面发出
-local function redstone_selftest()
-    local rs, count = nil, 0
-    for addr in component.list("redstone") do
-        count = count + 1
-        if not rs then rs = component.proxy(addr) end
-    end
-    if not rs then print("未找到redstone组件，自检退出") return end
-    print(string.format("使用redstone组件：%s", rs.address))
-    if count > 1 then print(string.format("警告：检测到%d个redstone组件（红石卡/红石I/O方块混用），脚本平时只会用其中一个！", count)) end
-    print("开始红石自检：每个面输出15信号各5秒，观察灯/红石粉在哪个面亮（可能触发仪式/清理机，属正常）")
-    local order = { {sides.down, "下(down)"}, {sides.up, "上(up)"}, {sides.north, "北(north)"}, {sides.south, "南(south)"}, {sides.west, "西(west)"}, {sides.east, "东(east)"} }
-    for _, v in ipairs(order) do
-        print(string.format("→ 正在输出：%s面，持续5秒", v[2]))
-        rs.setOutput(v[1], 15)
-        os.sleep(5)
-        rs.setOutput(v[1], 0)
-    end
-    print("自检结束：亮过灯/红石粉的面 = 信号确实能到达的面")
-end
-
 local function initialize()
     os.execute("cls")
     print("奥术钻探机模式接受所有祭品（除了无序的催化剂），填充机模式会排除无矿石祭品，纯矿石模式只接受纯矿石祭品。")
@@ -320,5 +299,4 @@ local function main()
     goto select
 end
 
-local args = {...}
-if args[1] == "test" then redstone_selftest() else main() end
+main()

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 项目概述
 
-GTNH（GregTech: New Horizons）整合包中血魔法"陨星仪式"（流星农场）的全自动控制脚本，运行在游戏内 OpenComputers（OC）电脑上。单文件项目：`zx.lua`，依赖 OC 标准库（component / sides / event / os / computer）。
+GTNH（GregTech: New Horizons）整合包中血魔法"陨星仪式"（流星农场）的全自动控制脚本，运行在游戏内 OpenComputers（OC）电脑上。两个脚本：`zx.lua`（主脚本）与 `redstone_test.lua`（红石输出测试工具：`redstone_test <方向> [时长秒] [强度]`）。依赖 OC 标准库（component / sides / event / os / computer）。
 
 无构建、测试、依赖管理工具链。脚本需拷入游戏内 OC 电脑运行；在本机只能做语法检查（如已安装 Lua：`luac -p zx.lua`）。注意 OC 使用 Lua 5.2+ 语法（`goto` 可用），`os.execute("cls")` 是 OC 清屏而非 Windows 命令。
 
@@ -15,7 +15,7 @@ GTNH（GregTech: New Horizons）整合包中血魔法"陨星仪式"（流星农�
 - 远程：`origin` = `git@gitee.com:mika-miko/starry-fall-automation.git`（SSH，master 分支）
 - 本机全局 git 代理（localhost:7897）可能未运行：SSH 推送不受影响，不要改回 HTTPS 地址
 - 游戏内下载地址（README 中提供）：`https://gitee.com/mika-miko/starry-fall-automation/raw/master/zx.lua`
-- **推送前必须语法检查**：`luac -p zx.lua`（本机已用 Homebrew 安装 Lua）。检查不通过禁止 commit/push——曾因跳过检查推出语法错误的脚本，导致游戏内直接加载失败
+- **推送前必须语法检查**：`luac -p zx.lua redstone_test.lua`（本机已用 Homebrew 安装 Lua）。检查不通过禁止 commit/push——曾因跳过检查推出语法错误的脚本，导致游戏内直接加载失败
 
 ## 游戏内硬件布局（脚本自识别约定）
 

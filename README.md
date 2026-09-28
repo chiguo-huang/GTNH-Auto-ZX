@@ -12,6 +12,12 @@ OC 电脑插入**互联网卡**，在终端执行：
 wget https://gitee.com/mika-miko/starry-fall-automation/raw/master/zx.lua zx.lua
 ```
 
+红石输出测试工具（可选，排查信号用）：
+
+```
+wget https://gitee.com/mika-miko/starry-fall-automation/raw/master/redstone_test.lua redstone_test.lua
+```
+
 更新脚本：重新执行同一条命令覆盖即可。
 
 装置搭建见下文 → 运行 `zx.lua` → 按提示选模式、答方向 → 开始挂机。
@@ -100,7 +106,7 @@ OC 电脑 ─网络──→ 适配器 → GT 采矿场×N setWorkAllowed 软件
 - **启动需要人工**：选模式、答方向（回车用默认值），不是全自动开机
 - **多采矿场**：按机器名 `multimachine.oredrill` 自动发现并批量控制，加减机器不用改代码
 - **LP 容差**：差 100 以内即开跑（转运期间 LP 仍在增长）
-- **红石排查**：怀疑信号发不出去时，运行 `zx.lua test` —— 六个面依次输出 5 秒信号，观察哪个面亮灯/亮红石粉；启动时也会回显生效的方向配置，与布线核对即可
+- **红石排查**：怀疑信号发不出去时，用独立测试脚本 `redstone_test <up|down|east|west|north|south> [时长秒] [信号强度]`（默认 5 秒、强度 15，到时自动归零）对指定面输出并观察灯/红石粉；启动时也会回显生效的方向配置，与布线核对即可
 
 ## 📄 开发约定
 
