@@ -15,6 +15,7 @@ GTNH（GregTech: New Horizons）整合包中血魔法"陨星仪式"（流星农�
 - 远程：`origin` = `git@gitee.com:mika-miko/starry-fall-automation.git`（SSH，master 分支）
 - 本机全局 git 代理（localhost:7897）可能未运行：SSH 推送不受影响，不要改回 HTTPS 地址
 - 游戏内下载地址（README 中提供）：`https://gitee.com/mika-miko/starry-fall-automation/raw/master/zx.lua`
+- **推送前必须语法检查**：`luac -p zx.lua`（本机已用 Homebrew 安装 Lua）。检查不通过禁止 commit/push——曾因跳过检查推出语法错误的脚本，导致游戏内直接加载失败
 
 ## 游戏内硬件布局（脚本自识别约定）
 
