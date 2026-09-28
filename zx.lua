@@ -211,18 +211,17 @@ local function initialize()
     if not redstone then
         print("未连接任何红石端口，已退出")
         os.exit(0)
-    end
-    if rs_count > 1 then
-        print(string.format("警告：检测到%d个redstone组件（红石卡/红石I/O方块混用），仅使用地址%s，信号从这个组件的面发出！",
-            rs_count, redstone.address))
-        os.sleep(5)
-    end
     elseif #oredrills == 0 then
         print("未连接任何采矿机，已退出")
         os.exit(0)
     elseif not transposer then
         print("未连接任何转运器，已退出")
         os.exit(0)
+    end
+    if rs_count > 1 then
+        print(string.format("警告：检测到%d个redstone组件（红石卡/红石I/O方块混用），仅使用地址%s，信号从这个组件的面发出！",
+            rs_count, redstone.address))
+        os.sleep(5)
     end
     for side = 0, 5 do
         local name = transposer.getInventoryName(side)
