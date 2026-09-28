@@ -21,7 +21,7 @@ GTNH（GregTech: New Horizons）整合包中血魔法"陨星仪式"（流星农�
 
 启动时扫描组件，按约定识别，缺任一即 `os.exit(0)` 退出：
 
-- **红石卡（redstone）**：触发仪式、控制清理机、接收完成信号。整个脚本只支持**一张**红石卡和一个转运器（组件扫描循环直接覆盖变量，多张会取到最后一个）。
+- **红石卡（redstone）**：触发仪式、控制清理机、接收完成信号。整个脚本只支持**一张**红石卡和一个转运器（扫描时 redstone 取第一个、transposer 取最后一个，redstone 的取法与 redstone_test.lua 一致；多于一个会有启动警告）。
 - **转运器（transposer）**：扫描 0-5 六个面，按 `getInventoryName` 内部名识别四个容器：
   - `tile.fullDrawers1` → 放祭品的抽屉，**固定读 2 号槽**
   - `tile.enderchest` → 末影箱，**固定写 1 号槽**（仪式从这里取祭品）

@@ -179,7 +179,7 @@ local function initialize()
     local rs_count = 0
     for addr in component.list() do
         local type = component.proxy(addr).type
-        if type == "redstone" then rs_count = rs_count + 1 redstone = component.proxy(addr)
+        if type == "redstone" then rs_count = rs_count + 1 if not redstone then redstone = component.proxy(addr) end --取第一个，与redstone_test.lua的绑定方式保持一致
         elseif type == "transposer" then transposer = component.proxy(addr)
         elseif type == "gt_machine" then
             local oredrill = component.proxy(addr)
