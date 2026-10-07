@@ -1,6 +1,6 @@
 # Starry Fall Automation ⭐
 
-> GTNH（GregTech: New Horizons）血魔法**陨星仪式 / 流星农场**全自动控制脚本，运行在游戏内 **OpenComputers** 电脑上。
+> GTNH（GregTech: New Horizons）**血魔法陨星仪式自动化**控制脚本，运行在游戏内 **OpenComputers** 电脑上。
 >
 > 你只需要补充祭品、维持 LP，剩下的全自动：召唤陨石 → 采集矿石 → 清理场地 → 无限循环。
 

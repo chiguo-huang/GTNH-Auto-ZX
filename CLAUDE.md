@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 项目概述
 
-GTNH（GregTech: New Horizons）整合包中血魔法"陨星仪式"（流星农场）的全自动控制脚本，运行在游戏内 OpenComputers（OC）电脑上。两个脚本：`zx.lua`（主脚本）与 `redstone_test.lua`（红石输出测试工具：`redstone_test <方向> [时长秒] [强度]`）。依赖 OC 标准库（component / sides / event / os / computer）。
+GTNH（GregTech: New Horizons）整合包中血魔法陨星仪式自动化的控制脚本，运行在游戏内 OpenComputers（OC）电脑上。两个脚本：`zx.lua`（主脚本）与 `redstone_test.lua`（红石输出测试工具：`redstone_test <方向> [时长秒] [强度]`）。依赖 OC 标准库（component / sides / event / os / computer）。
 
 无构建、测试、依赖管理工具链。脚本需拷入游戏内 OC 电脑运行；在本机只能做语法检查（如已安装 Lua：`luac -p zx.lua`）。注意 OC 使用 Lua 5.2+ 语法（`goto` 可用），`os.execute("cls")` 是 OC 清屏而非 Windows 命令。
 
